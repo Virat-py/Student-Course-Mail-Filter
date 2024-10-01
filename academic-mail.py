@@ -97,7 +97,5 @@ def fetch_emails(limit=10):
         # Logout from the server
         mail.logout()
 
-    return "\n".join(emails) if emails else "No emails found."  # Join all emails with newlines
-
 fetch_emails(limit=40)
 # checks relevant mails and summarizes the body from 40 most recent mails
