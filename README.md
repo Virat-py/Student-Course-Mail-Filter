@@ -5,15 +5,14 @@ Students of IITD often receive a large volume of emails that may not be relevant
 
 ## Overview
 
-This project is a Python-based email filter and summarizer that connects to an IMAP email server, retrieves emails, filters them based on specific keywords, and summarizes their content using the Groq API. It is particularly useful for students and professionals looking to manage and synthesize important emails efficiently.
-
+This project is a Python-based Email Filter and Summarizer that connects to an IMAP email server, retrieves emails, filters them based on specific keywords, and presents their content using a Streamlit interface. It is particularly useful for students and professionals looking to manage and synthesize important emails efficiently.
 
 ## Features
 
 - **IMAP Email Retrieval**: Connects to an IMAP server to fetch emails from the inbox.
 - **Keyword Filtering**: Filters emails based on defined keywords in both subject and body using re module.
 - **Content Summarization**: Utilizes the Groq API to summarize email content in a concise manner.
-- **Output Formatting**: Outputs the subject and summarized body of each relevant email.
+- **Streamlit Interface**: Provides an interactive web application for users to log in and view relevant emails seamlessly.
 
 ## Technologies Used
 
@@ -21,4 +20,4 @@ This project is a Python-based email filter and summarizer that connects to an I
 - `imaplib`: For connecting to the email server.
 - `email`: For handling email messages.
 - `re`: For regular expression operations.
-- `Groq`: For summarizing email content via an API.
+- `Streamlit`: For creating the user interface.
