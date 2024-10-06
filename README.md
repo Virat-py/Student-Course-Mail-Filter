@@ -1,4 +1,7 @@
 # Email Filter and Summarizer
+
+you can access the working project here: https://student-course-mail-filter-dhyrxa8guefnzqs2ivpqbf.streamlit.app/
+
 ## Problem
 
 Students of IITD often receive a large volume of emails that may not be relevant to their specific courses or interests. This overwhelming influx of information can lead to important messages being overlooked. The email filter and summarizer aims to solve this problem by providing a tool that filters out irrelevant emails, allowing students to focus only on communications related to their enrolled courses.
