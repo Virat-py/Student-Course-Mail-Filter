@@ -1,6 +1,7 @@
 # Email Filter and Summarizer
 
 you can access the working project here: https://student-course-mail-filter-dhyrxa8guefnzqs2ivpqbf.streamlit.app/
+<img width="1469" alt="Screenshot 2024-10-06 at 3 56 18 PM" src="https://github.com/user-attachments/assets/351db932-4fb0-48c8-955d-c7dc7869d30e">
 
 ## Problem
 
