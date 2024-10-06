@@ -1,65 +1,60 @@
-import re
+import streamlit as st
 import imaplib
 import email
 from email.header import decode_header
-from groq import Groq
-import os
+import re
 
 # Email search keywords
 check_keywords = {
     "col106", "hul243", "mtl106", "mtl180",
-    "pyl102", "cvl100","sovikdas","dharmaraja",
-    "amartyasengupta","minatide"
+    "pyl102", "cvl100", "sovikdas", "dharmaraja",
+    "amartyasengupta", "minatide"
 }
-
+filter="0123456789abcdefghijklmnopqrstuvwxyz"
 def check_text(text):
     """Checks if the given mail satisfies the filter based on keywords."""
     if not isinstance(text, str):
         return False
-    clean_text = re.sub(r'[^a-z0-9]', '', text.lower())
-    # Return True if any keyword is found in the cleaned text
-    return any(key in clean_text for key in check_keywords)
+    temp=""
+    text=text.lower()
+    for i in text:
+        if i in filter:
+            temp+=i
+    for check in check_keywords:
+        if check in temp:
+            return True
+    return False
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-)
-def summarize(text):
-    """Summarizes the given text using the Groq API."""
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": "summarize in paragraph form in less than 400 words add newline for every 50 words,remove any empty lines from your response" + text,
-            }
-        ],
-        model="llama3-70b-8192",
-    )
-
-    # Get the summary text from the response
-    summary = chat_completion.choices[0].message.content
-
-    # Split the summary into lines and remove the first line
-    summary_lines = summary.splitlines()
-    summary = "\n".join(summary_lines[1:])
-
-    return summary.strip()
 
 def get_email_body(msg):
-    """Extract email body content."""
+    """Extract email body content and clean it by removing separators."""
     if msg.is_multipart():
         for part in msg.walk():
             if part.get_content_type() in ["text/plain", "text/html"]:
-                return part.get_payload(decode=True).decode("utf-8", errors="ignore")
+                body = part.get_payload(decode=True).decode("utf-8", errors="ignore")
+                return clean_email_body(body, part.get_content_type())
     else:
-        return msg.get_payload(decode=True).decode("utf-8", errors="ignore")
+        body = msg.get_payload(decode=True).decode("utf-8", errors="ignore")
+        return clean_email_body(body, msg.get_content_type())
     return ""
 
-def fetch_emails(limit=10):
+def clean_email_body(body, content_type):
+    """Clean the email body by removing unwanted separators and preserve links if HTML."""
+    # Remove lines that only contain hyphens or similar patterns
+    cleaned_body = re.sub(r'[-=]+', '', body)  # Remove lines of hyphens
+
+    # Normalize line breaks
+    cleaned_body = re.sub(r'\n+', '\n', cleaned_body).strip()
+
+    # If the body is HTML, return it as is to preserve links
+    if "html" in content_type.lower():
+        return cleaned_body
+
+    return cleaned_body
+
+def fetch_emails(email_user, email_pass, limit=10):
     """Connect to IMAP server and fetch filtered emails."""
     imap_server = "imap.iitd.ac.in"
-    email_user = "kerberos_id@iitd.ac.in"
-    email_pass = "webmail_password"
-
     emails = []
 
     with imaplib.IMAP4_SSL(imap_server) as mail:
@@ -90,12 +85,33 @@ def fetch_emails(limit=10):
                     # Check if the subject or body contains specific keywords
                     if check_text(subject) or check_text(body):
                         # Append formatted email data
-                        print(f"Subject: {subject}")
-                        print(f"Body: {summarize(body)}")
-                        print("-" * 50)
+                        emails.append({"subject": subject, "body": body})
 
         # Logout from the server
         mail.logout()
+    return emails
 
-fetch_emails(limit=40)
-# checks relevant mails and summarizes the body from 40 most recent mails
+def main():
+    st.title("IITD Mail Filter :envelope_with_arrow:", anchor=None)
+    st.markdown("<h2 style='font-size: 36px;'>Login to Your IITD mail</h2>", unsafe_allow_html=True)
+
+    # Login form
+    email_user = st.text_input("Email Address", "")
+    email_pass = st.text_input("Password", type="password")
+
+    if st.button("Fetch Emails"):
+        if email_user and email_pass:
+            with st.spinner("Fetching emails..."):
+                emails = fetch_emails(email_user, email_pass, limit=40)
+                if emails:
+                    for email in emails:
+                        st.subheader(f"Subject: {email['subject']}", anchor=None)
+                        st.markdown(f"<p style='font-size: 18px;'>{email['body']}</p>", unsafe_allow_html=True)
+                        st.markdown("---")
+                else:
+                    st.warning("No relevant emails found.")
+        else:
+            st.error("Please enter both email and password.")
+
+if __name__ == "__main__":
+    main()
