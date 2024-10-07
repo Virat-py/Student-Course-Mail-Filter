@@ -15,7 +15,6 @@ This project is a Python-based Email Filter and Summarizer that connects to an I
 
 - **IMAP Email Retrieval**: Connects to an IMAP server to fetch emails from the inbox.
 - **Keyword Filtering**: Filters emails based on defined keywords in both subject and body using re module.
-- **Content Summarization**: Utilizes the Groq API to summarize email content in a concise manner.
 - **Streamlit Interface**: Provides an interactive web application for users to log in and view relevant emails seamlessly.
 
 ## Technologies Used
